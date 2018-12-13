@@ -1,0 +1,145 @@
+# rhel 5.x based kickstart file
+# disk layout assumes a 4GB sda
+# from  http://blog.vinternals.com/2010/12/minimal-rhel-55-centos-55-install.html
+#         link above no longer valid 2/8/2012
+install
+cdrom
+lang en_US.UTF-8
+keyboard us
+network --device eth0 --bootproto dhcp --hostname sl55.local
+firewall --enabled --port=22:tcp
+services --disabled ip6tables
+rootpw root
+authconfig --enableshadow --enablemd5
+selinux --permissive
+timezone --utc Europe/London
+bootloader --location=mbr --driveorder=sda
+clearpart --initlabel --linux --drives=sda
+part /boot --fstype ext3 --size=500
+part pv.2 --size=0 --grow --ondisk=sda
+volgroup vg00 --pesize=32768 pv.2
+logvol swap --fstype swap --name=swap00 --vgname=vg00 --size=1024
+logvol / --fstype ext3 --name=lv00 --vgname=vg00 --size=2560
+reboot
+
+%packages
+@base
+@core
+-NetworkManager
+-OpenIPMI
+-acpid
+-amtu
+-anacron
+-aspell
+-aspell-en
+-autofs
+-bluez-utils
+-ccid
+-conman
+-coolkey
+-cpuspeed
+-crash
+-cryptsetup-luks
+-dhcpv6-client
+-dmraid
+-dos2unix
+-dosfstools
+-dump
+-eject
+-fbset
+-finger
+-firstboot-tui
+-ftp
+-gnupg
+-gpm
+-ipsec-tools
+-iptstate
+-ipw2100-firmware
+-ipw2200-firmware
+-irda-utils
+-irqbalance
+-iwlwifi-1000-ucode
+-iwlwifi-3945-ucode
+-iwlwifi-4965-ucode
+-iwlwifi-5000-ucode
+-iwlwifi-5150-ucode
+-iwlwifi-6000-ucode
+-jwhois
+-krb5-workstation
+-ksh
+-lftp
+-libaio
+-logwatch
+-m2crypto
+-man-pages
+-mcelog
+-mdadm
+-mgetty
+-microcode_ctl
+-mkbootdisk
+-mlocate
+-mozldap
+-mtools
+-mtr
+-nano
+-nc
+-nfs-utils
+-nss-tools
+-nss_db
+-nss_ldap
+-numactl
+-oddjob
+-openssh-clients
+-pam_ccreds
+-pam_krb5
+-pam_passwdqc
+-pam_pkcs11
+-pam_smb
+-pax
+-pcmciautils
+-pinfo
+-pkinit-nss
+-pm-utils
+-rdate
+-rdist
+-readahead
+-redhat-lsb
+-rng-utils
+-rp-pppoe
+-rsh
+-rsync
+-rt61pci-firmware
+-rt73usb-firmware
+-sendmail
+-setarch
+-setuptool
+-smartmontools
+-sos
+-specspo
+-stunnel
+-sudo
+-svrcore
+-symlinks
+-system-config-network-tui
+-talk
+-tcp_wrappers
+-tcpdump
+-tcsh
+-telnet
+-time
+-tree
+-unix2dos
+-unzip
+-usbutils
+-vconfig
+-wget
+-which
+-wireless-tools
+-words
+-ypbind
+-zip
+
+%post
+#really disable ipv6
+echo "install ipv6 /bin/true" > /etc/modprobe.d/blacklist-ipv6.conf
+echo "blacklist ipv6" >> /etc/modprobe.d/blacklist-ipv6.conf
